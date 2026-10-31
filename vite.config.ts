@@ -250,6 +250,19 @@ function createProblemCachePlugin(): Plugin {
 
   return {
     name: 'leetcode-problem-assets-cache',
+    async generateBundle() {
+      const cachedData = await readFile(cacheFile, 'utf8');
+      const parsed: unknown = JSON.parse(cachedData);
+      if (!isProblemList(parsed)) {
+        throw new Error(`The problem cache at ${cacheFile} is invalid.`);
+      }
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'problems.json',
+        source: cachedData,
+      });
+    },
     configureServer(server) {
       server.middlewares.use(handleRequest);
     },
@@ -260,6 +273,7 @@ function createProblemCachePlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: '/leetScout/',
   plugins: [react(), createProblemCachePlugin()],
   server: {
     host: '0.0.0.0',

@@ -9,7 +9,9 @@ const difficulties: Array<'All' | Difficulty> = ['All', 'Easy', 'Medium', 'Hard'
 function App() {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadedFromCache, setLoadedFromCache] = useState<boolean | null>(null);
+  const [dataSource, setDataSource] = useState<
+    'cache' | 'fresh' | 'published' | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [search, setSearch] = useState('');
@@ -28,9 +30,9 @@ function App() {
     setError(null);
 
     loadProblems(controller.signal)
-      .then(({ problems: loadedProblems, cached }) => {
+      .then(({ problems: loadedProblems, source }) => {
         setProblems(loadedProblems);
-        setLoadedFromCache(cached);
+        setDataSource(source);
       })
       .catch((cause: unknown) => {
         if (cause instanceof DOMException && cause.name === 'AbortError') {
@@ -236,11 +238,13 @@ function App() {
           </div>
           <div className="stats-note">
             <span className="pulse-dot" />
-            {loadedFromCache === null
+            {dataSource === null
               ? 'Loading problem data'
-              : loadedFromCache
-                ? 'Loaded from assets database'
-                : 'Fetched and saved to assets'}
+              : dataSource === 'published'
+                ? 'Loaded from published dataset'
+                : dataSource === 'cache'
+                  ? 'Loaded from assets database'
+                  : 'Fetched and saved to assets'}
           </div>
         </section>
 

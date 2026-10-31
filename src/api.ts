@@ -2,11 +2,15 @@ import type { Problem } from './types';
 
 export interface ProblemLoadResult {
   problems: Problem[];
-  cached: boolean;
+  source: 'cache' | 'fresh' | 'published';
 }
 
 export async function loadProblems(signal: AbortSignal): Promise<ProblemLoadResult> {
-  const response = await fetch('/api/problems', { signal });
+  const isDevelopment = import.meta.env.DEV;
+  const url = isDevelopment
+    ? '/api/problems'
+    : `${import.meta.env.BASE_URL}problems.json`;
+  const response = await fetch(url, { signal });
   if (!response.ok) {
     let message = `Problem API returned HTTP ${response.status}.`;
     try {
@@ -31,10 +35,17 @@ export async function loadProblems(signal: AbortSignal): Promise<ProblemLoadResu
     throw new Error('The problem API returned data in an unexpected format.');
   }
 
+  if (!isDevelopment) {
+    return { problems: problems as Problem[], source: 'published' };
+  }
+
   const cacheStatus = response.headers.get('X-Problem-Cache');
   if (cacheStatus !== 'HIT' && cacheStatus !== 'MISS') {
     throw new Error('The problem API did not report its cache status.');
   }
 
-  return { problems: problems as Problem[], cached: cacheStatus === 'HIT' };
+  return {
+    problems: problems as Problem[],
+    source: cacheStatus === 'HIT' ? 'cache' : 'fresh',
+  };
 }
