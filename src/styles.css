@@ -744,10 +744,13 @@ h1 span {
 }
 
 .filter-hint {
+  display: block;
+  max-width: 100%;
   margin: 7px 0 0;
   color: #a1a5ae;
-  font-size: 9px;
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .filter-footer {
@@ -765,10 +768,13 @@ h1 span {
 }
 
 .filter-footer p {
+  min-width: 0;
+  flex: 1;
   margin: 0;
   color: #9a8b7e;
-  font-size: 9px;
-  line-height: 1.55;
+  font-size: 10px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .results-panel {
