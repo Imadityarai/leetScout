@@ -28,3 +28,5 @@ Run `npm run build`.
 - Category selections use strict AND matching: a problem must have every selected topic.
 - Problems are sorted by highest rating first by default, with a Show more button to browse beyond the initial 100 results.
 - The app does not replace failed live requests with sample problems; it displays the source error and lets you retry.
+## about app
+this app provides a way to filter out Leetcode DSA problems on the basis of multiple Categories and Rating of the problem based on contest.
