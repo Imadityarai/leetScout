@@ -619,6 +619,43 @@ h1 span {
   line-height: 0.8;
 }
 
+.category-match-control {
+  margin-top: 12px;
+}
+
+.category-match-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid #e9ebef;
+  border-radius: 6px;
+  background: #f8f8f9;
+}
+
+.category-match-option {
+  padding: 7px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #777c86;
+  font-size: 10px;
+}
+
+.category-match-option.selected {
+  background: #fff;
+  color: #bd7149;
+  box-shadow: 0 1px 3px #252b3712;
+  font-weight: 600;
+}
+
+.category-match-help {
+  margin: 6px 0 0;
+  color: #a1a5ae;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
 .filter-panel select,
 .sort-control select {
   width: 100%;

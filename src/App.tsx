@@ -17,12 +17,16 @@ function App() {
   const [search, setSearch] = useState('');
   const [categorySearch, setCategorySearch] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryMatchMode, setCategoryMatchMode] = useState<'soft' | 'hard'>(
+    'soft',
+  );
   const [difficulty, setDifficulty] = useState<'All' | Difficulty>('All');
   const [minRating, setMinRating] = useState('');
   const [maxRating, setMaxRating] = useState('');
   const [sortOrder, setSortOrder] = useState<SortOrder>('rating-desc');
   const [visibleCount, setVisibleCount] = useState(100);
   const [pickedProblem, setPickedProblem] = useState<Problem | null>(null);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -80,9 +84,13 @@ function App() {
           problem.title.toLowerCase().includes(query) ||
           problem.frontendQuestionId.includes(query);
 
-        const matchesCategory = selectedCategories.every((category) =>
-          problem.topicTags.some((tag) => tag.name === category),
-        );
+        const problemCategories = new Set(problem.topicTags.map((tag) => tag.name));
+        const matchesCategory =
+          selectedCategories.length === 0 ||
+          (categoryMatchMode === 'hard'
+            ? problemCategories.size === selectedCategories.length &&
+              selectedCategories.every((category) => problemCategories.has(category))
+            : selectedCategories.every((category) => problemCategories.has(category)));
 
         const matchesDifficulty =
           difficulty === 'All' || problem.difficulty === difficulty;
@@ -113,11 +121,28 @@ function App() {
           ? a.rating - b.rating
           : b.rating - a.rating;
       });
-  }, [problems, search, selectedCategories, difficulty, minRating, maxRating, sortOrder]);
+  }, [
+    problems,
+    search,
+    selectedCategories,
+    categoryMatchMode,
+    difficulty,
+    minRating,
+    maxRating,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     setVisibleCount(100);
-  }, [search, selectedCategories, difficulty, minRating, maxRating, sortOrder]);
+  }, [
+    search,
+    selectedCategories,
+    categoryMatchMode,
+    difficulty,
+    minRating,
+    maxRating,
+    sortOrder,
+  ]);
 
   const ratedCount = useMemo(
     () => problems.filter((problem) => problem.rating !== null).length,
@@ -136,6 +161,7 @@ function App() {
   function resetFilters() {
     setSearch('');
     setSelectedCategories([]);
+    setCategoryMatchMode('soft');
     setDifficulty('All');
     setMinRating('');
     setMaxRating('');
@@ -349,6 +375,40 @@ function App() {
                   ))}
                 </div>
               )}
+              <div className="category-match-control">
+                <span className="field-label">Category matching</span>
+                <div
+                  className="category-match-options"
+                  role="group"
+                  aria-label="Category matching mode"
+                >
+                  <button
+                    className={`category-match-option ${
+                      categoryMatchMode === 'soft' ? 'selected' : ''
+                    }`}
+                    type="button"
+                    aria-pressed={categoryMatchMode === 'soft'}
+                    onClick={() => setCategoryMatchMode('soft')}
+                  >
+                    Soft
+                  </button>
+                  <button
+                    className={`category-match-option ${
+                      categoryMatchMode === 'hard' ? 'selected' : ''
+                    }`}
+                    type="button"
+                    aria-pressed={categoryMatchMode === 'hard'}
+                    onClick={() => setCategoryMatchMode('hard')}
+                  >
+                    Hard
+                  </button>
+                </div>
+                <p className="category-match-help">
+                  {categoryMatchMode === 'hard'
+                    ? 'A problem must have exactly the selected categories.'
+                    : 'A problem must include every selected category; extra categories are allowed.'}
+                </p>
+              </div>
             </div>
 
             <fieldset className="difficulty-field">

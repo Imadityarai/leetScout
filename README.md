@@ -5,7 +5,7 @@ A React + Vite app for choosing LeetCode problems by category and rating.
 ## Features
 
 - Browse problems from the LeetCode problem set.
-- Filter by one or more topic categories (all selected topics must match), difficulty, and rating range.
+- Filter by one or more topic categories in soft mode (all selected topics must match) or hard mode (the problem's categories must match the selection exactly), difficulty, and rating range.
 - Search by problem name or ID.
 - Pick a random problem matching your current filters.
 - Combine real LeetCode metadata with contest-style ratings from zerotrac.
@@ -35,7 +35,7 @@ local Vite server and commit the updated snapshot.
 - The first request fetches the LeetCode problem list and the rating data from zerotrac, combines them, and saves the result in `assets/problems.json`.
 - Later requests read `assets/problems.json` and do not call either website again. Remove that file only when you want to fetch a fresh copy.
 - The cache API runs in the Vite development server and Vite preview server. GitHub Pages serves the bundled static problem snapshot because static hosting cannot write to the project’s assets folder.
-- Category selections use strict AND matching: a problem must have every selected topic.
+- Soft category matching requires every selected topic but allows extra topics; hard matching requires an exact category set. With no selected categories, either mode leaves the category filter inactive.
 - Problems are sorted by highest rating first by default, with a Show more button to browse beyond the initial 100 results.
 - The app does not replace failed live requests with sample problems; it displays the source error and lets you retry.
 ## about app
